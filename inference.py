@@ -19,50 +19,92 @@ def parse_args():
 
 
 def create_new_mapping():
-    """FRNet 모델의 출력 클래스(0-19)를 새로운 5개 클래스로 매핑합니다."""
+    # """FRNet 모델의 출력 클래스(0-19)를 새로운 5개 클래스로 매핑합니다."""
+    # # 기본적으로 모든 클래스를 4(unlabeled)로 설정
+    # frnet_to_new = {i: 4 for i in range(20)}
+    
+    # # 현재 클래스 이름:
+    # # car               -> car
+    # # bicycle           -> other-vehicle
+    # # motorcycle        -> other-vehicle
+    # # truck             -> car
+    # # bus               -> other-vehicle
+    # # preson            -> other-vehicle
+    # # bicyclist         -> other-vehicle
+    # # motorcyclist      -> other-vehicle
+    # # road              -> road
+    # # parking           -> road
+    # # sidewalk          -> sidewalk
+    # # other-ground      -> unlabeled
+    # # building          -> unlabeled
+    # # fence             -> unlabeled
+    # # vegtation         -> unlabeled
+    # # trunck            -> unlabeled
+    # # terrian           -> unlabeled
+    # # pole              -> unlabeled
+    # # traffic-sign      -> unlabeled
+
+    
+    # # 자동차(car) 클래스로 매핑 - 0
+    # frnet_to_new[0] = 0  # car
+    # frnet_to_new[3] = 0  # truck
+    
+    # # 기타 차량(other-vehicle) 클래스로 매핑 - 1
+    # frnet_to_new[1] = 1  # bicycle
+    # frnet_to_new[2] = 1  # motorcycle
+    # frnet_to_new[4] = 1  # bus 
+    # frnet_to_new[5] = 1  # preson 
+    # frnet_to_new[6] = 1  # bicyclist
+    # frnet_to_new[7] = 1  # motorcyclist
+    
+    # # 도로(road) 클래스로 매핑 - 2
+    # frnet_to_new[8] = 2  # road
+    # frnet_to_new[9] = 2  # parking
+    
+    # # 인도(sidewalk) 클래스로 매핑 - 3
+    # frnet_to_new[10] = 3  # sidewalk
+
+    """FRNet 모델의 출력 클래스(0-16)를 새로운 5개 클래스로 매핑합니다."""
     # 기본적으로 모든 클래스를 4(unlabeled)로 설정
-    frnet_to_new = {i: 4 for i in range(20)}
+    frnet_to_new = {i: 4 for i in range(17)}
     
     # 현재 클래스 이름:
-    # car               -> car
-    # bicycle           -> other-vehicle
-    # motorcycle        -> other-vehicle
-    # truck             -> car
-    # bus               -> other-vehicle
-    # preson            -> other-vehicle
-    # bicyclist         -> other-vehicle
-    # motorcyclist      -> other-vehicle
-    # road              -> road
-    # parking           -> road
-    # sidewalk          -> sidewalk
-    # other-ground      -> unlabeled
-    # building          -> unlabeled
-    # fence             -> unlabeled
-    # vegtation         -> unlabeled
-    # trunck            -> unlabeled
-    # terrian           -> unlabeled
-    # pole              -> unlabeled
-    # traffic-sign      -> unlabeled
+    # 차단물            -> unlabeled
+    # 자전거            -> other-vehicle
+    # 버스              -> car
+    # 자동차            -> car
+    # 건설 장비         -> other-vehicle
+    # 오토바이          -> other-vehicle
+    # 보행자            -> other-vehicle
+    # 교통 콘           -> unlabeled
+    # 트레일러          -> other-vehicle
+    # 트럭              -> car
+    # 주행 가능 표면    -> road
+    # 기타 평면         -> road
+    # 인도              -> sidewalk
+    # 지형              -> unlabeled
+    # 인공 구조물       -> unlabeled
+    # 식생              -> unlabeled
 
     
     # 자동차(car) 클래스로 매핑 - 0
-    frnet_to_new[0] = 0  # car
-    frnet_to_new[3] = 0  # truck
+    frnet_to_new[2] = 0  # 버스
+    frnet_to_new[3] = 0  # 자동차
+    frnet_to_new[9] = 0  # 트럭
     
     # 기타 차량(other-vehicle) 클래스로 매핑 - 1
-    frnet_to_new[1] = 1  # bicycle
-    frnet_to_new[2] = 1  # motorcycle
+    frnet_to_new[1] = 1  # 자전거
     frnet_to_new[4] = 1  # bus 
     frnet_to_new[5] = 1  # preson 
     frnet_to_new[6] = 1  # bicyclist
-    frnet_to_new[7] = 1  # motorcyclist
+    frnet_to_new[8] = 1  # motorcyclist
     
     # 도로(road) 클래스로 매핑 - 2
-    frnet_to_new[8] = 2  # road
-    frnet_to_new[9] = 2  # parking
+    frnet_to_new[10] = 2  # 주행 가능 표면
+    frnet_to_new[11] = 2  # 기타 평면
     
     # 인도(sidewalk) 클래스로 매핑 - 3
-    frnet_to_new[10] = 3  # sidewalk
+    frnet_to_new[10] = 3  # 인도
     
     return frnet_to_new
 
