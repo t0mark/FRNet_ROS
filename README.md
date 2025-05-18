@@ -32,7 +32,7 @@ sudo apt-get install ros-noetic-pcl-ros
 sudo apt-get install ros-noetic-tf
 
 # 기타 패키지
-pip install numpy==1.24.4 pyyaml struct
+pip install numpy==1.24.4 pyyaml
 ```
 
 ## 빌드
