@@ -44,7 +44,7 @@ cd ~/catkin_ws/src
 # FRNet 저장소 복제
 git clone https://github.com/t0mark/FRNet_ROS
 
-chmod +x frnet_ros/scripts/frnet_segmentation_node.py
+chmod +x FRNet_ros/scripts/frnet_segmentation_node.py
 
 cd ..
 catkin_make
