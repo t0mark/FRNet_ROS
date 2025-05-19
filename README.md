@@ -44,15 +44,9 @@ cd ~/catkin_ws/src
 # FRNet 저장소 복제
 git clone https://github.com/t0mark/FRNet_ROS
 
-# frnet_ros 패키지 생성
-mkdir -p frnet_ros/scripts
-mkdir -p frnet_ros/launch
-mkdir -p frnet_ros/configs
-mkdir -p frnet_ros/checkpoints
+chmod +x frnet_ros/scripts/frnet_segmentation_node.py
 
-chmod +x ~/catkin_ws/src/frnet_ros/scripts/frnet_segmentation_node.py
-
-cd ~/catkin_ws
+cd ..
 catkin_make
 source devel/setup.bash
 ```
