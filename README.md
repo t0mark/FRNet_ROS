@@ -42,7 +42,7 @@ mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
 
 # FRNet 저장소 복제
-https://github.com/t0mark/FRNet_ROS
+git clone https://github.com/t0mark/FRNet_ROS
 
 # frnet_ros 패키지 생성
 mkdir -p frnet_ros/scripts
