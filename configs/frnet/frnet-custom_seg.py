@@ -8,8 +8,8 @@ custom_imports = dict(
 
 model = dict(
     data_preprocessor=dict(
-        H=32, W=512, fov_up=23.0, fov_down=-23.0, ignore_index=19),
-    backbone=dict(output_shape=(32, 512)),
+        H=32, W=1024, fov_up=23.0, fov_down=-23.0, ignore_index=19),
+    backbone=dict(output_shape=(32, 1024)),
     decode_head=dict(num_classes=20, ignore_index=19),
     auxiliary_head=[
         dict(
