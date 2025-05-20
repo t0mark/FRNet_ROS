@@ -120,25 +120,25 @@ train_pipeline = [
         translation_std=[0.1, 0.1, 0.1]),
     dict(
         type='FrustumMix',
-        H=64,
-        W=512,
-        fov_up=3.0,
-        fov_down=-25.0,
+        H=32,
+        W=1024,
+        fov_up=23.0,
+        fov_down=-23.0,
         num_areas=[3, 4, 5, 6],
         pre_transform=pre_transform,
         prob=1.0),
     dict(
         type='InstanceCopy',
-        instance_classes=[1, 2, 3, 4, 5, 6, 7, 11, 15, 17, 18],
+        instance_classes=[1, 2, 3, 4],
         pre_transform=pre_transform,
         prob=1.0),
     dict(
         type='RangeInterpolation',
-        H=64,
-        W=2048,
-        fov_up=3.0,
-        fov_down=-25.0,
-        ignore_index=19),
+        H=32,
+        W=4069,
+        fov_up=23.0,
+        fov_down=-23.0,
+        ignore_index=0),
     dict(type='Pack3DDetInputs', keys=['points', 'pts_semantic_mask'])
 ]
 test_pipeline = [
@@ -160,11 +160,11 @@ test_pipeline = [
     dict(type='PointSegClassMapping'),
     dict(
         type='RangeInterpolation',
-        H=64,
-        W=2048,
-        fov_up=3.0,
-        fov_down=-25.0,
-        ignore_index=19),
+        H=32,
+        W=4096,
+        fov_up=23.0,
+        fov_down=-23.0,
+        ignore_index=0),
     dict(type='Pack3DDetInputs', keys=['points'], meta_keys=['num_points'])
 ]
 tta_pipeline = [
@@ -186,11 +186,11 @@ tta_pipeline = [
     dict(type='PointSegClassMapping'),
     dict(
         type='RangeInterpolation',
-        H=64,
-        W=2048,
-        fov_up=3.0,
-        fov_down=-25.0,
-        ignore_index=19),
+        H=32,
+        W=4096,
+        fov_up=23.0,
+        fov_down=-23.0,
+        ignore_index=0),
     dict(
         type='TestTimeAug',
         transforms=[[
@@ -238,11 +238,11 @@ train_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='semantickitti_infos_train.pkl',
+        ann_file='MLDAS_infos_train.pkl',
         pipeline=train_pipeline,
         metainfo=metainfo,
         modality=input_modality,
-        ignore_index=19,
+        ignore_index=0,
         backend_args=backend_args))
 val_dataloader = dict(
     batch_size=1,
@@ -253,11 +253,11 @@ val_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         data_root=data_root,
-        ann_file='semantickitti_infos_val.pkl',
+        ann_file='MLDAS_infos_val.pkl',
         pipeline=test_pipeline,
         metainfo=metainfo,
         modality=input_modality,
-        ignore_index=19,
+        ignore_index=0,
         test_mode=True,
         backend_args=backend_args))
 test_dataloader = val_dataloader

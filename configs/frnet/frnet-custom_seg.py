@@ -8,14 +8,14 @@ custom_imports = dict(
 
 model = dict(
     data_preprocessor=dict(
-        H=32, W=1024, fov_up=23.0, fov_down=-23.0, ignore_index=19),
+        H=32, W=1024, fov_up=23.0, fov_down=-23.0, ignore_index=0),
     backbone=dict(output_shape=(32, 1024)),
-    decode_head=dict(num_classes=20, ignore_index=19),
+    decode_head=dict(num_classes=5, ignore_index=0),
     auxiliary_head=[
         dict(
             type='FrustumHead',
             channels=128,
-            num_classes=20,
+            num_classes=5,
             dropout_ratio=0,
             loss_ce=dict(
                 type='mmdet.CrossEntropyLoss',
@@ -26,11 +26,11 @@ model = dict(
                 type='LovaszLoss', loss_weight=1.5, reduction='none'),
             loss_boundary=dict(type='BoundaryLoss', loss_weight=1.0),
             conv_seg_kernel_size=1,
-            ignore_index=19),
+            ignore_index=0),
         dict(
             type='FrustumHead',
             channels=128,
-            num_classes=20,
+            num_classes=5,
             dropout_ratio=0,
             loss_ce=dict(
                 type='mmdet.CrossEntropyLoss',
@@ -41,12 +41,12 @@ model = dict(
                 type='LovaszLoss', loss_weight=1.5, reduction='none'),
             loss_boundary=dict(type='BoundaryLoss', loss_weight=1.0),
             conv_seg_kernel_size=1,
-            ignore_index=19,
+            ignore_index=0,
             indices=2),
         dict(
             type='FrustumHead',
             channels=128,
-            num_classes=20,
+            num_classes=5,
             dropout_ratio=0,
             loss_ce=dict(
                 type='mmdet.CrossEntropyLoss',
@@ -57,12 +57,12 @@ model = dict(
                 type='LovaszLoss', loss_weight=1.5, reduction='none'),
             loss_boundary=dict(type='BoundaryLoss', loss_weight=1.0),
             conv_seg_kernel_size=1,
-            ignore_index=19,
+            ignore_index=0,
             indices=3),
         dict(
             type='FrustumHead',
             channels=128,
-            num_classes=20,
+            num_classes=5,
             dropout_ratio=0,
             loss_ce=dict(
                 type='mmdet.CrossEntropyLoss',
@@ -73,6 +73,6 @@ model = dict(
                 type='LovaszLoss', loss_weight=1.5, reduction='none'),
             loss_boundary=dict(type='BoundaryLoss', loss_weight=1.0),
             conv_seg_kernel_size=1,
-            ignore_index=19,
+            ignore_index=0,
             indices=4),
     ])
