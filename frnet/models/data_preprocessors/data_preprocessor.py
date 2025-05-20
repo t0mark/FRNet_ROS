@@ -39,9 +39,6 @@ class FrustumRangePreprocessor(BaseDataPreprocessor):
         self.fov = abs(self.fov_down) + abs(self.fov_up)
         self.ignore_index = ignore_index
 
-        # 디버깅용
-        # print(f"[CONFIG] H={self.H}, W={self.W}, fov_up={self.fov_up}, fov_down={self.fov_down}")
-
     def forward(self, data: dict, training: bool = False) -> dict:
         """Perform frustum region group based on ``BaseDataPreprocessor``.
 
@@ -69,121 +66,64 @@ class FrustumRangePreprocessor(BaseDataPreprocessor):
         return {'inputs': batch_inputs, 'data_samples': data_samples}
 
     @torch.no_grad()
-    def frustum_region_group(self, points: List[Tensor], data_samples: SampleList) -> dict:
+    def frustum_region_group(self, points: List[Tensor],
+                             data_samples: SampleList) -> dict:
+        """Calculate frustum region of each point.
+
+        Args:
+            points (List[Tensor]): Point cloud in one data batch.
+
+        Returns:
+            dict: Frustum region information.
+        """
         voxel_dict = dict()
+
         coors = []
         voxels = []
 
-        # 디버깅 정보 저장용 리스트
-        # debug_info = {}
-
         for i, res in enumerate(points):
-            # 디버깅 정보 초기화
-            # batch_debug = {}
-            
             depth = torch.linalg.norm(res[:, :3], 2, dim=1)
             yaw = -torch.atan2(res[:, 1], res[:, 0])
             pitch = torch.arcsin(res[:, 2] / depth)
 
-            # 디버깅 - 중간값 통계 저장
-            # batch_debug['depth'] = {
-            #     'min': float(torch.min(depth)), 'max': float(torch.max(depth)), 
-            #     'mean': float(torch.mean(depth)), 'nan': int(torch.isnan(depth).sum()),
-            #     'inf': int(torch.isinf(depth).sum())
-            # }
-            # batch_debug['yaw'] = {
-            #     'min': float(torch.min(yaw)), 'max': float(torch.max(yaw)), 
-            #     'mean': float(torch.mean(yaw)), 'nan': int(torch.isnan(yaw).sum()),
-            #     'inf': int(torch.isinf(yaw).sum())
-            # }
-            # batch_debug['pitch'] = {
-            #     'min': float(torch.min(pitch)), 'max': float(torch.max(pitch)), 
-            #     'mean': float(torch.mean(pitch)), 'nan': int(torch.isnan(pitch).sum()),
-            #     'inf': int(torch.isinf(pitch).sum())
-            # }
-
             coors_x = 0.5 * (yaw / np.pi + 1.0)
             coors_y = 1.0 - (pitch + abs(self.fov_down)) / self.fov
-
-            # 디버깅 - 정규화 좌표 통계 저장
-            # batch_debug['norm_x'] = {
-            #     'min': float(torch.min(coors_x)), 'max': float(torch.max(coors_x)), 
-            #     'mean': float(torch.mean(coors_x)), 'nan': int(torch.isnan(coors_x).sum()),
-            #     'inf': int(torch.isinf(coors_x).sum()),
-            #     'out_of_range': int(((coors_x < 0) | (coors_x > 1)).sum())
-            # }
-            # batch_debug['norm_y'] = {
-            #     'min': float(torch.min(coors_y)), 'max': float(torch.max(coors_y)), 
-            #     'mean': float(torch.mean(coors_y)), 'nan': int(torch.isnan(coors_y).sum()),
-            #     'inf': int(torch.isinf(coors_y).sum()),
-            #     'out_of_range': int(((coors_y < 0) | (coors_y > 1)).sum())
-            # }
 
             # scale to image size using angular resolution
             coors_x *= self.W
             coors_y *= self.H
 
-            # 스케일링 전 좌표 저장 (디버깅용)
-            pre_clamped_x = coors_x.clone()
-            pre_clamped_y = coors_y.clone()
-
             # round and clamp for use as index
             coors_x = torch.floor(coors_x)
-            coors_x = torch.clamp(coors_x, min=0, max=self.W - 1).type(torch.int64)
+            coors_x = torch.clamp(
+                coors_x, min=0, max=self.W - 1).type(torch.int64)
 
             coors_y = torch.floor(coors_y)
-            coors_y = torch.clamp(coors_y, min=0, max=self.H - 1).type(torch.int64)
+            coors_y = torch.clamp(
+                coors_y, min=0, max=self.H - 1).type(torch.int64)
 
-            # 디버깅 - 최종 픽셀 좌표 통계 저장
-            # batch_debug['pixel_x'] = {
-            #     'min': float(torch.min(pre_clamped_x)), 'max': float(torch.max(pre_clamped_x)), 
-            #     'mean': float(torch.mean(pre_clamped_x)), 
-            #     'out_of_range': int(((pre_clamped_x < 0) | (pre_clamped_x >= self.W)).sum()),
-            #     'clamped_min': int((pre_clamped_x < 0).sum()), 
-            #     'clamped_max': int((pre_clamped_x >= self.W).sum())
-            # }
-            # batch_debug['pixel_y'] = {
-            #     'min': float(torch.min(pre_clamped_y)), 'max': float(torch.max(pre_clamped_y)), 
-            #     'mean': float(torch.mean(pre_clamped_y)), 
-            #     'out_of_range': int(((pre_clamped_y < 0) | (pre_clamped_y >= self.H)).sum()),
-            #     'clamped_min': int((pre_clamped_y < 0).sum()), 
-            #     'clamped_max': int((pre_clamped_y >= self.H).sum())
-            # }
-            
-            # FOV 정보 추가
-            # batch_debug['fov_settings'] = {
-            #     'fov_up': float(self.fov_up), 
-            #     'fov_down': float(self.fov_down), 
-            #     'total_fov': float(self.fov),
-            #     'H': self.H, 
-            #     'W': self.W
-            # }
-            
-            # 포인트 수 정보
-            # batch_debug['num_points'] = len(res)
-            
-            # 디버깅 정보 저장
-            # debug_info[f'batch_{i}'] = batch_debug
-            
             res_coors = torch.stack([coors_y, coors_x], dim=1)
             res_coors = F.pad(res_coors, (1, 0), mode='constant', value=i)
             coors.append(res_coors)
             voxels.append(res)
 
-            # 추가 디버깅 - 샘플 포인트 출력
-            # sample_indices = torch.randint(0, len(res), (min(5, len(res)),))
-            # print(f"\n===== 배치 {i} 샘플 포인트 =====")
-            # for idx in sample_indices:
-            #     idx = idx.item()
-            #     print(f"Point[{idx}]: 원본좌표=({res[idx, 0]:.2f}, {res[idx, 1]:.2f}, {res[idx, 2]:.2f}), "
-            #         f"depth={depth[idx]:.2f}, yaw={yaw[idx]:.2f}, pitch={pitch[idx]:.2f}, "
-            #         f"정규화좌표=({coors_x[idx]:.2f}, {coors_y[idx]:.2f})")
+            if 'pts_semantic_mask' in data_samples[i].gt_pts_seg:
+                import torch_scatter
+                pts_semantic_mask = data_samples[
+                    i].gt_pts_seg.pts_semantic_mask
+                seg_label = torch.ones(
+                    (self.H, self.W),
+                    dtype=torch.long,
+                    device=pts_semantic_mask.device) * self.ignore_index
+                res_voxel_coors, inverse_map = torch.unique(
+                    res_coors, return_inverse=True, dim=0)
+                voxel_semantic_mask = torch_scatter.scatter_mean(
+                    F.one_hot(pts_semantic_mask).float(), inverse_map, dim=0)
+                voxel_semantic_mask = torch.argmax(voxel_semantic_mask, dim=-1)
+                seg_label[res_voxel_coors[:, 1],
+                          res_voxel_coors[:, 2]] = voxel_semantic_mask
+                data_samples[i].gt_pts_seg.semantic_seg = seg_label
 
-        # 전체 디버깅 정보 출력
-        # import json
-        # print("\n===== Frustum 투영 디버깅 정보 =====")
-        # print(json.dumps(debug_info, indent=2))
-        
         voxels = torch.cat(voxels, dim=0)
         coors = torch.cat(coors, dim=0)
         voxel_dict['voxels'] = voxels
